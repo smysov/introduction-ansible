@@ -1,0 +1,9 @@
+---
+- name: user
+  hosts: demo
+  tasks:
+    - name: Create user
+      user:
+        name: test_user
+        state: present
+      become: true
