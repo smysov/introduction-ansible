@@ -1,8 +1,6 @@
 ---
 - name: user
   hosts: demo
-  vars_files:
-    - ./variables.yaml
   tasks:
       - name: Create user
         user:
