@@ -1,9 +1,11 @@
 ---
 - name: user
   hosts: demo
+  vars_files:
+    - ./variables.yaml
   tasks:
-    - name: Create user
-      user:
-        name: test_user
-        state: present
-      become: true
+      - name: Create user
+        user:
+            name: '{{user}}'
+            state: present
+        become: true
