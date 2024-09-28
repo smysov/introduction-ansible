@@ -7,3 +7,4 @@
             name: '{{user}}'
             state: present
         become: true
+        debugger: on_failed
