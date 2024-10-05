@@ -1,9 +1,0 @@
----
-- name: user
-  hosts: demo
-  tasks:
-      - name: Reboot machine
-        ansible.builtin.reboot:
-          reboot_timeout: 300
-          msg: 'Rebooting! Good bye'
-        become: true

@@ -1,0 +1,60 @@
+---
+- name: Preconfig
+  hosts: ubuntu
+  become: true
+  tasks:
+      - name: Install Docker
+        block:
+            - name: Add universe
+              apt_repository:
+                  repo: 'deb http://archive.ubuntu.com/ubuntu/ {{ansible_distribution_release}} universe'
+                  state: present
+            - name: Install additional packages
+              apt:
+                  name:
+                      - ca-certificates
+                      - curl
+                  update_cache: yes
+                  cache_valid_time: 86400
+            - name: Create directory for Docker's GPG key
+              file:
+                  path: /etc/apt/keyrings
+                  state: directory
+                  mode: '0755'
+            - name: Add Docker's official GPG key
+              apt_key:
+                  url: https://download.docker.com/linux/ubuntu/gpg
+                  keyring: /etc/apt/keyrings/docker.gpg
+                  state: present
+            - name: Add Docker repository
+              apt_repository:
+                  repo: >
+                      deb [arch={{ansible_architecture}} signed-by=/etc/apt/keyrings/docker.asc]
+                      https://download.docker.com/linux/ubuntu {{ansible_distribution_release}} stable
+                  state: present
+                  update_cache: yes
+                  filename: docker
+            - name: Install Docker and related packages
+              apt:
+                  name: '{{item}}'
+                  state: present
+                  update_cache: yes
+              loop:
+                  - docker-ce
+                  - docker-ce-cli
+                  - containerd.io
+                  - docker-buildx-plugin
+                  - docker-compose-plugin
+            - name: Finaly stage
+              block:
+                  - name: Add Docker group
+                    group:
+                        name: docker
+                        state: present
+                  - name: Add user to Docker group
+                    user:
+                        name: '{{ ansible_user }}'
+                        groups: docker
+                        append: yes
+                  - name: Reboot machine
+                    reboot:
